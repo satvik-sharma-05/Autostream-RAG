@@ -1,6 +1,7 @@
 services:
+  # ── Backend (Docker + FastAPI) ─────────────────────────────────────────────
   - type: web
-    name: autostream-agent
+    name: autostream-agent-backend
     runtime: docker
     dockerfilePath: ./Dockerfile      # repo root Dockerfile
     dockerContext: .                  # repo root as context
@@ -35,3 +36,16 @@ services:
         value: "0.3"
       - key: CORS_ORIGINS
         value: "*"
+
+  # ── Frontend (Docker + nginx) ──────────────────────────────────────────────
+  - type: web
+    name: autostream-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+    branch: main
+    autoDeploy: true
+    dockerBuildArgs:
+      - key: VITE_API_URL
+        value: https://autostream-agent-backend.onrender.com
