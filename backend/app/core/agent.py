@@ -31,13 +31,32 @@ def _get_groq_client() -> AsyncGroq:
     return _groq_client
 
 
-def _get_llm() -> ChatGroq:
+def _get_llm(model_override: str = None) -> ChatGroq:
+    model = model_override or os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
     return ChatGroq(
         api_key=os.getenv("GROQ_API_KEY"),
-        model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+        model=model,
         temperature=float(os.getenv("TEMPERATURE", "0.3")),
         max_tokens=int(os.getenv("GROQ_MAX_TOKENS", "500")),
     )
+
+
+async def _invoke_llm_with_fallback(messages: list) -> str:
+    """Try primary model, fall back to faster model on rate limit."""
+    primary = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    fallback = "llama-3.1-8b-instant"
+    for model in [primary, fallback]:
+        try:
+            llm = _get_llm(model)
+            response = await llm.ainvoke(messages)
+            return response.content
+        except Exception as e:
+            if "429" in str(e) or "rate_limit_exceeded" in str(e):
+                if model == fallback:
+                    raise  # both exhausted
+                logger.warning(f"Rate limit on {model}, trying {fallback}")
+                continue
+            raise
 
 
 # ── Graph nodes ──────────────────────────────────────────────────────────────
@@ -149,8 +168,7 @@ async def lead_collection_node(state: ConversationState) -> dict:
     if _looks_like_question(last_human):
         rag_context = retrieve_context(last_human)
         system_content = SYSTEM_PROMPT.format(rag_context=rag_context or "No specific context retrieved.")
-        llm = _get_llm()
-        ai_response = await llm.ainvoke(
+        content = await _invoke_llm_with_fallback(
             [SystemMessage(content=system_content)] + list(messages[-10:])
         )
         field_prompts = {
@@ -160,7 +178,7 @@ async def lead_collection_node(state: ConversationState) -> dict:
         }
         re_ask = f"\n\n{field_prompts[awaiting]}" if awaiting in field_prompts else ""
         return {
-            "messages": [AIMessage(content=ai_response.content + re_ask)],
+            "messages": [AIMessage(content=content + re_ask)],
             "rag_context": rag_context,
             "awaiting_field": awaiting,
             "turn_count": state.get("turn_count", 0) + 1,
@@ -232,9 +250,7 @@ async def llm_node(state: ConversationState) -> dict:
     history = state["messages"][-10:]
     llm_messages = [SystemMessage(content=system_content)] + list(history)
 
-    llm = _get_llm()
-    ai_response = await llm.ainvoke(llm_messages)
-    response_text = ai_response.content
+    response_text = await _invoke_llm_with_fallback(llm_messages)
 
     updates: dict = {
         "messages": [AIMessage(content=response_text)],

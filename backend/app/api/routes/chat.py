@@ -29,5 +29,13 @@ async def chat_endpoint(request: Request, body: ChatRequest):
             turn_count=result["turn_count"],
         )
     except Exception as e:
-        logger.error(f"Chat error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        err = str(e)
+        logger.error(f"Chat error: {err}")
+        # Surface Groq rate limit as 429 instead of 500
+        if "429" in err or "rate_limit_exceeded" in err:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=429,
+                detail="The AI service is temporarily rate-limited. Please wait a moment and try again.",
+            )
+        raise HTTPException(status_code=500, detail=err)

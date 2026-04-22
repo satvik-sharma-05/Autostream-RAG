@@ -69,23 +69,30 @@ async def classify_intent(message: str, groq_client: AsyncGroq, model: str) -> T
         logger.info(f"Layer 1 keyword match: {keyword_result[0]} ({keyword_result[1]})")
         return keyword_result
 
-    # Layer 2 — LLM
-    prompt = INTENT_CLASSIFICATION_PROMPT.format(message=message)
-    try:
-        response = await groq_client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            max_tokens=100,
-        )
-        raw = response.choices[0].message.content.strip()
-        match = re.search(r"\{.*\}", raw, re.DOTALL)
-        if match:
-            data = json.loads(match.group())
-            intent = data.get("intent", "off_topic")
-            confidence = float(data.get("confidence", 0.5))
-            logger.info(f"Layer 2 LLM classification: {intent} ({confidence})")
-            return intent, confidence
-    except Exception as e:
-        logger.error(f"Intent classification failed: {e}")
+    # Layer 2 — LLM (try primary model, fall back to 8b on rate limit)
+    primary = model
+    fallback = "llama-3.1-8b-instant"
+    for attempt_model in [primary, fallback]:
+        prompt = INTENT_CLASSIFICATION_PROMPT.format(message=message)
+        try:
+            response = await groq_client.chat.completions.create(
+                model=attempt_model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                max_tokens=100,
+            )
+            raw = response.choices[0].message.content.strip()
+            match = re.search(r"\{.*\}", raw, re.DOTALL)
+            if match:
+                data = json.loads(match.group())
+                intent = data.get("intent", "off_topic")
+                confidence = float(data.get("confidence", 0.5))
+                logger.info(f"Layer 2 LLM classification: {intent} ({confidence})")
+                return intent, confidence
+        except Exception as e:
+            if ("429" in str(e) or "rate_limit_exceeded" in str(e)) and attempt_model != fallback:
+                logger.warning(f"Rate limit on {attempt_model}, trying {fallback}")
+                continue
+            logger.error(f"Intent classification failed: {e}")
+            break
     return "off_topic", 0.5

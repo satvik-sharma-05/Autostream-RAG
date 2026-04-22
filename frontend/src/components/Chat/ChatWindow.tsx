@@ -35,10 +35,14 @@ export default function ChatWindow() {
                 intent: res.intent,
             }])
             if (res.lead_captured) setLeadCaptured(true)
-        } catch {
+        } catch (err: unknown) {
+            const status = (err as { response?: { status?: number } })?.response?.status
+            const msg = status === 429
+                ? "The AI is temporarily rate-limited. Please wait a moment and try again."
+                : "Sorry, something went wrong. Please try again."
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'Sorry, something went wrong. Please try again.',
+                content: msg,
             }])
         } finally {
             setLoading(false)
