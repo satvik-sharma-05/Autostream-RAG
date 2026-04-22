@@ -25,7 +25,7 @@ services:
       - key: CHECKPOINTER_PATH
         value: /app/data/checkpoints.db
       - key: EMBEDDING_MODEL
-        value: sentence-transformers/all-MiniLM-L6-v2
+        value: sentence-transformers/paraphrase-MiniLM-L3-v2
       - key: ENVIRONMENT
         value: production
       - key: LOG_LEVEL

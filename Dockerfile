@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-bake the embedding model so cold starts don't download it
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
+# DO NOT pre-download the model — let it lazy-load on first request
+# This keeps the Docker image small and startup fast (Render health check passes)
 
 # Copy backend source
 COPY backend/ .

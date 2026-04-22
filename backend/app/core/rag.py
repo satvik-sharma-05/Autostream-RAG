@@ -2,7 +2,6 @@
 import json
 import os
 from pathlib import Path
-from typing import List
 
 import chromadb
 from chromadb.utils import embedding_functions
@@ -24,13 +23,29 @@ def _get_client():
     return _chroma_client
 
 
+def _get_embedding_function():
+    """
+    Use ChromaDB's built-in ONNX embedding function in production (low memory).
+    Falls back to SentenceTransformer locally if preferred.
+    """
+    env = os.getenv("ENVIRONMENT", "development")
+    model = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+
+    if env == "production":
+        # ONNXMiniLM_L6_V2 — ~50MB, runs on CPU, no torch required
+        logger.info("Using ChromaDB built-in ONNX embedding (production mode)")
+        return embedding_functions.ONNXMiniLM_L6_V2()
+    else:
+        logger.info(f"Using SentenceTransformer: {model}")
+        return embedding_functions.SentenceTransformerEmbeddingFunction(model_name=model)
+
+
 def _get_collection():
     global _collection
     if _collection is None:
         client = _get_client()
         collection_name = os.getenv("CHROMA_COLLECTION_NAME", "autostream_kb")
-        embedding_model = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-        ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=embedding_model)
+        ef = _get_embedding_function()
         _collection = client.get_or_create_collection(
             name=collection_name,
             embedding_function=ef,
