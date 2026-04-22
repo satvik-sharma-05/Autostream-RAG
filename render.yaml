@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: autostream-agent
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile   # path relative to repo root
+    dockerContext: ./backend               # build context = backend/ folder
+    plan: free
+    branch: main
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: chromadb-data
+      mountPath: /app/data
+      sizeGB: 5
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false          # add manually in Render dashboard
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: CHROMA_PERSIST_DIR
+        value: /app/data/chromadb
+      - key: CHROMA_COLLECTION_NAME
+        value: autostream_kb
+      - key: CHECKPOINTER_PATH
+        value: /app/data/checkpoints.db
+      - key: EMBEDDING_MODEL
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: GROQ_MAX_TOKENS
+        value: "500"
+      - key: TEMPERATURE
+        value: "0.3"
+      - key: CORS_ORIGINS
+        value: "*"
