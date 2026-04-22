@@ -125,11 +125,22 @@ def _parse_lead_fields(text: str) -> dict:
         if len(t.split()) <= 5 and "@" not in t and "?" not in t:
             found["name"] = t
 
-    # Detect platform keywords if not already found
+    # Detect platform keywords if not already found — fuzzy match for typos
     if "platform" not in found:
-        for p in ["youtube", "tiktok", "instagram", "facebook", "twitter", "linkedin", "twitch"]:
-            if p in t.lower():
-                found["platform"] = p.capitalize()
+        _PLATFORMS = {
+            "youtube": "YouTube",
+            "tiktok": "TikTok",
+            "instagram": "Instagram",
+            "facebook": "Facebook",
+            "twitter": "Twitter",
+            "linkedin": "LinkedIn",
+            "twitch": "Twitch",
+        }
+        t_lower = t.lower()
+        for key, display in _PLATFORMS.items():
+            # exact substring OR starts-with match (catches "instagaram", "youtub", etc.)
+            if key in t_lower or t_lower.startswith(key[:5]):
+                found["platform"] = display
                 break
 
     return found
@@ -257,15 +268,55 @@ async def llm_node(state: ConversationState) -> dict:
         "turn_count": state.get("turn_count", 0) + 1,
     }
 
-    # ONLY trigger lead collection on explicit high purchase intent
+    # ONLY trigger lead collection on explicit high purchase intent.
+    # Guard against ambiguous single-word replies like "yes"/"ok" which are
+    # continuations of conversation, not fresh purchase signals.
+    _AMBIGUOUS = {"yes", "yeah", "yep", "ok", "okay", "sure", "yup", "no", "nope"}
+    last_human = next(
+        (m.content for m in reversed(state["messages"]) if isinstance(m, HumanMessage)), ""
+    ).strip().lower()
+    last_human_raw = next(
+        (m.content for m in reversed(state["messages"]) if isinstance(m, HumanMessage)), ""
+    ).strip()
+
     HIGH_INTENT = {"high_purchase_intent"}
-    if intent in HIGH_INTENT and not state.get("lead_captured"):
+    if (intent in HIGH_INTENT
+            and not state.get("lead_captured")
+            and last_human not in _AMBIGUOUS):
         if not lead_info.get("name"):
-            # Replace the LLM response with a short, direct ask — no long sales pitch
             updates["messages"] = [AIMessage(
                 content="Great choice! To get you connected with our team, could I start with your name?"
             )]
             updates["awaiting_field"] = "name"
+
+    # If user provided name+email in a single message while NOT in collection mode,
+    # parse and start collection so it doesn't get lost in the LLM response
+    if not state.get("awaiting_field") and not state.get("lead_captured"):
+        parsed = _parse_lead_fields(last_human_raw)
+        if parsed.get("name") and parsed.get("email"):
+            merged = dict(lead_info)
+            for f in ("name", "email", "platform"):
+                if f not in merged and f in parsed:
+                    merged[f] = parsed[f]
+            if "name" in merged:
+                merged["name"] = _clean_name(merged["name"])
+            updates["lead_info"] = merged
+            if not merged.get("platform"):
+                updates["awaiting_field"] = "platform"
+                updates["messages"] = [AIMessage(
+                    content=f"Thanks {merged['name']}! Which platform do you primarily create content for? (YouTube, TikTok, Instagram, etc.)"
+                )]
+            else:
+                result = capture_lead.invoke({
+                    "name": merged["name"],
+                    "email": merged["email"],
+                    "platform": merged["platform"],
+                })
+                updates["lead_captured"] = True
+                updates["awaiting_field"] = None
+                updates["messages"] = [AIMessage(
+                    content=f"Perfect! I've got everything I need. {result} Is there anything else I can help you with today?"
+                )]
 
     return updates
 

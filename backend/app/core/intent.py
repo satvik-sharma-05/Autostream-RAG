@@ -38,6 +38,7 @@ def _keyword_classify(message: str) -> Tuple[str, float] | None:
     lower = message.lower().strip()
 
     # Single-word plan names typed alone = high purchase intent
+    # BUT exclude bare "yes" / "no" / "ok" — too ambiguous
     if lower in ("pro", "pro plan", "business", "business plan", "premium"):
         return "high_purchase_intent", 0.90
 
