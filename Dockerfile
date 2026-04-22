@@ -6,9 +6,10 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential g++ curl && rm -rf /var/lib/apt/lists/*
 
-# Copy and install dependencies
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy and install PRODUCTION dependencies only
+# (no sentence-transformers / torch / CUDA — saves ~2GB RAM)
+COPY backend/requirements.prod.txt .
+RUN pip install --no-cache-dir -r requirements.prod.txt
 
 # DO NOT pre-download the model — let it lazy-load on first request
 # This keeps the Docker image small and startup fast (Render health check passes)

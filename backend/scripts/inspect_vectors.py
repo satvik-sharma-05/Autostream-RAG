@@ -18,7 +18,7 @@ COLLECTION  = os.getenv("CHROMA_COLLECTION_NAME", "autostream_kb")
 EMBED_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 client = chromadb.PersistentClient(path=CHROMA_DIR)
-ef     = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+ef = embedding_functions.ONNXMiniLM_L6_V2()
 
 try:
     col = client.get_collection(name=COLLECTION, embedding_function=ef)

@@ -25,19 +25,11 @@ def _get_client():
 
 def _get_embedding_function():
     """
-    Use ChromaDB's built-in ONNX embedding function in production (low memory).
-    Falls back to SentenceTransformer locally if preferred.
+    Use ChromaDB's built-in ONNX embedding function.
+    ~50MB, CPU-only, no PyTorch dependency.
     """
-    env = os.getenv("ENVIRONMENT", "development")
-    model = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-
-    if env == "production":
-        # ONNXMiniLM_L6_V2 — ~50MB, runs on CPU, no torch required
-        logger.info("Using ChromaDB built-in ONNX embedding (production mode)")
-        return embedding_functions.ONNXMiniLM_L6_V2()
-    else:
-        logger.info(f"Using SentenceTransformer: {model}")
-        return embedding_functions.SentenceTransformerEmbeddingFunction(model_name=model)
+    logger.info("Using ChromaDB built-in ONNX embedding (all-MiniLM-L6-v2)")
+    return embedding_functions.ONNXMiniLM_L6_V2()
 
 
 def _get_collection():

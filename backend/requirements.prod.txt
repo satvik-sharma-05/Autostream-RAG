@@ -1,0 +1,47 @@
+# Production requirements — NO sentence-transformers, NO torch, NO CUDA
+# ChromaDB's built-in ONNX embedder is used instead (onnxruntime only, ~50MB)
+
+# Web framework
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+python-dotenv>=1.0.1
+
+# Pydantic
+pydantic>=2.7.4
+pydantic-settings>=2.2.1
+
+# LangGraph + LangChain
+langgraph>=0.2.0
+langgraph-checkpoint-sqlite>=3.0.0
+langchain>=0.3.0
+langchain-groq>=0.2.0
+langchain-community>=0.3.0
+langchain-core>=0.3.0
+
+# Groq
+groq>=0.11.0
+
+# ChromaDB + ONNX embeddings (no torch, no sentence-transformers)
+chromadb>=0.5.0
+onnxruntime>=1.16.0
+
+# Database
+sqlalchemy>=2.0.0
+aiosqlite>=0.20.0
+alembic>=1.13.0
+
+# Auth & Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Rate Limiting
+slowapi>=0.1.9
+
+# HTTP
+httpx>=0.27.0
+
+# Utils
+email-validator>=2.1.0
+python-dateutil>=2.9.0
+python-json-logger>=2.0.7
