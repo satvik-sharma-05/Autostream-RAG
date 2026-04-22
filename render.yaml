@@ -2,8 +2,8 @@ services:
   - type: web
     name: autostream-agent
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile   # path relative to repo root
-    dockerContext: ./backend               # build context = backend/ folder
+    dockerfilePath: ./Dockerfile      # repo root Dockerfile
+    dockerContext: .                  # repo root as context
     plan: free
     branch: main
     healthCheckPath: /health
