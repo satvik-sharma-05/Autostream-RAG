@@ -1,0 +1,34 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest pytest-asyncio
+
+      - name: Run tests
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: llama-3.1-8b-instant
+          CHROMA_PERSIST_DIR: /tmp/chromadb
+          CHECKPOINTER_PATH: /tmp/checkpoints.db
+          ENVIRONMENT: test
+        run: pytest tests/ -v --tb=short

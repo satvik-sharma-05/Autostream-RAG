@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/data
+    env_file:
+      - .env
+    environment:
+      - CHROMA_PERSIST_DIR=/app/data/chromadb
+      - CHECKPOINTER_PATH=/app/data/checkpoints.db
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped

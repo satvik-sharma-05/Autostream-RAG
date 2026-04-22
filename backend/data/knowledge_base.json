@@ -1,0 +1,217 @@
+{
+  "company": {
+    "name": "AutoStream",
+    "tagline": "AI-Powered Video Editing for Creators",
+    "description": "AutoStream is a SaaS platform that uses AI to automate video editing workflows for YouTubists, TikTokers, and professional content creators. We help creators save hours of manual editing time with intelligent scene detection, auto-captions, and one-click publishing.",
+    "website": "https://autostream.ai",
+    "support_email": "support@autostream.ai",
+    "founded": "2022",
+    "headquarters": "San Francisco, CA"
+  },
+  "plans": [
+    {
+      "name": "Free",
+      "price": "$0/month",
+      "features": [
+        "5 video exports per month",
+        "720p max resolution",
+        "Basic AI cuts and transitions",
+        "2GB cloud storage",
+        "Community support",
+        "Watermark on exports"
+      ],
+      "best_for": "Beginners and hobbyists",
+      "limits": {
+        "max_video_length": "15 minutes",
+        "exports_per_month": 5,
+        "resolution": "720p",
+        "storage_gb": 2
+      }
+    },
+    {
+      "name": "Pro",
+      "price": "$29/month",
+      "annual_price": "$19/month (billed annually - save $120/year)",
+      "features": [
+        "Unlimited video exports",
+        "4K resolution support",
+        "Advanced AI scene detection",
+        "Auto-captions in 30+ languages",
+        "50GB cloud storage",
+        "Priority email support (24/7)",
+        "Custom branding removal",
+        "YouTube/TikTok direct publish",
+        "No watermark",
+        "Export up to 4 hours"
+      ],
+      "best_for": "Content creators and YouTubers",
+      "limits": {
+        "max_video_length": "4 hours",
+        "exports_per_month": "unlimited",
+        "resolution": "4K",
+        "storage_gb": 50,
+        "support": "24/7 priority email"
+      }
+    },
+    {
+      "name": "Business",
+      "price": "$79/month",
+      "annual_price": "$59/month (billed annually - save $240/year)",
+      "features": [
+        "Everything in Pro",
+        "Team collaboration (up to 5 seats)",
+        "API access",
+        "White-label exports",
+        "500GB cloud storage",
+        "Dedicated account manager",
+        "Custom AI model training",
+        "Analytics dashboard",
+        "SLA guarantee (99.9% uptime)",
+        "Export unlimited length"
+      ],
+      "best_for": "Agencies and media companies",
+      "limits": {
+        "max_video_length": "unlimited",
+        "exports_per_month": "unlimited",
+        "resolution": "8K ready",
+        "storage_gb": 500,
+        "support": "24/7 phone + dedicated manager"
+      }
+    }
+  ],
+  "policies": {
+    "refund": {
+      "policy": "No refunds after 7 days of purchase",
+      "details": "We offer a 7-day money-back guarantee on all paid plans. Refund requests must be submitted within 7 days of the initial purchase date. After 7 days, no refunds will be issued. Contact support@autostream.ai for refund requests.",
+      "exceptions": "Annual plans: Pro-rated refunds available within first 30 days"
+    },
+    "support": {
+      "free_plan": "Community forum only, response within 48-72 hours",
+      "pro_plan": "24/7 priority email support, response within 4 hours",
+      "business_plan": "24/7 phone + email support, response within 1 hour",
+      "channels": ["Email", "Live chat (Pro+)", "Phone (Business only)"]
+    },
+    "cancellation": {
+      "policy": "Cancel anytime. No cancellation fees.",
+      "details": "Your plan stays active until the end of your current billing period. No refunds for partial months."
+    },
+    "data_retention": {
+      "policy": "We retain your data for 30 days after cancellation",
+      "details": "After cancellation, you have 30 days to export your videos. After 30 days, all data is permanently deleted."
+    }
+  },
+  "faqs": [
+    {
+      "question": "What video formats does AutoStream support?",
+      "answer": "AutoStream supports MP4, MOV, AVI, MKV, WebM, and most common video formats. Output is always optimized MP4 or WebM for best compatibility."
+    },
+    {
+      "question": "Can I cancel my subscription anytime?",
+      "answer": "Yes, you can cancel anytime. Your plan stays active until the end of the billing period. No cancellation fees. No refunds for partial months."
+    },
+    {
+      "question": "Is there a free trial for Pro?",
+      "answer": "Yes! We offer a 14-day free trial for the Pro plan. No credit card required. You get full Pro features including unlimited 4K exports during the trial."
+    },
+    {
+      "question": "How does the AI video editing work?",
+      "answer": "Our AI analyzes your raw footage, detects scenes, removes silences, adds smart transitions, and generates captions automatically. You can review, adjust, and fine-tune before exporting. The whole process takes minutes instead of hours."
+    },
+    {
+      "question": "Does AutoStream work for YouTube Shorts and TikTok?",
+      "answer": "Absolutely. AutoStream has dedicated templates and aspect ratio presets for YouTube Shorts (9:16), TikTok (9:16), Instagram Reels (9:16), and standard YouTube videos (16:9)."
+    },
+    {
+      "question": "What is the maximum video length?",
+      "answer": "Free plan: 15 minutes maximum. Pro plan: 4 hours maximum. Business plan: Unlimited length."
+    },
+    {
+      "question": "Do you offer refunds?",
+      "answer": "We offer a 7-day money-back guarantee on all paid plans. Refund requests must be made within 7 days of purchase. After 7 days, no refunds are issued."
+    },
+    {
+      "question": "Can I use AutoStream on mobile?",
+      "answer": "AutoStream has a responsive web app that works on mobile browsers. Native iOS and Android apps are coming Q3 2025."
+    },
+    {
+      "question": "What platforms can I publish to directly?",
+      "answer": "AutoStream integrates directly with YouTube, TikTok, Instagram, Facebook, and Twitter. You can publish from within the app without downloading first."
+    },
+    {
+      "question": "Is there an API?",
+      "answer": "Yes, API access is available on the Business plan. You can programmatically upload, edit, and export videos. API documentation is available at api.autostream.ai."
+    },
+    {
+      "question": "Can multiple team members collaborate?",
+      "answer": "Team collaboration is available on the Business plan, which includes up to 5 team seats with shared projects, comments, and approval workflows."
+    }
+  ],
+  "integrations": [
+    {
+      "name": "YouTube",
+      "type": "Direct publish",
+      "available_on": "Pro+"
+    },
+    {
+      "name": "TikTok",
+      "type": "Direct publish",
+      "available_on": "Pro+"
+    },
+    {
+      "name": "Instagram",
+      "type": "Direct publish",
+      "available_on": "Pro+"
+    },
+    {
+      "name": "Dropbox",
+      "type": "Import",
+      "available_on": "Free+"
+    },
+    {
+      "name": "Google Drive",
+      "type": "Import",
+      "available_on": "Free+"
+    },
+    {
+      "name": "Adobe Premiere",
+      "type": "Plugin",
+      "available_on": "Pro+"
+    },
+    {
+      "name": "Zapier",
+      "type": "Automation",
+      "available_on": "Business"
+    }
+  ],
+  "use_cases": [
+    {
+      "name": "YouTube channel automation",
+      "description": "Automate editing for daily YouTube uploads with templates and batch processing"
+    },
+    {
+      "name": "TikTok content creation",
+      "description": "Convert long-form videos into viral shorts with AI-powered clipping"
+    },
+    {
+      "name": "Podcast video editing",
+      "description": "Remove silences, add waveforms, and generate social clips automatically"
+    },
+    {
+      "name": "Corporate training videos",
+      "description": "Add captions, transitions, and branding to training materials at scale"
+    },
+    {
+      "name": "Real estate video tours",
+      "description": "Create professional property walkthroughs with automated music and captions"
+    },
+    {
+      "name": "E-commerce product videos",
+      "description": "Generate product showcase videos for Amazon, Shopify, and social ads"
+    }
+  ],
+  "competitors": {
+    "vs_capcut": "AutoStream offers more advanced AI features including scene detection and API access, while CapCut is better for manual mobile editing.",
+    "vs_descript": "AutoStream is more affordable and focused on video exports, while Descript specializes in podcast editing.",
+    "vs_veed": "Both are similar, but AutoStream offers team collaboration and white-labeling on Business plan."
+  }
+}
